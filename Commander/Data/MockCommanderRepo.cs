@@ -13,9 +13,11 @@ namespace Commander.Data
             var commands = new List<Command>
             {
                 new Command { Id = 0, HowTo = "Boil an egg", Line = "Boil water", Platform = "Kettle & Pan" },
-                new Command { Id = 1, HowTo = "Boil an egg", Line = "Boil water", Platform = "Kettle & Pan" },
-                new Command { Id = 2, HowTo = "Boil an egg", Line = "Boil water", Platform = "Kettle & Pan" }
+                new Command { Id = 1, HowTo = "Cut a bred", Line = "Get a knife", Platform = "Knife & Chopping bord" },
+                new Command { Id = 2, HowTo = "Make cup of tea", Line = "Place teebg in cup", Platform = "Kettle & cup" }
             };
+
+            return commands;
         }
         public Command GetCommandById(int id)
         {
