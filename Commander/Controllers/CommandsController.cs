@@ -1,4 +1,6 @@
-﻿using Commander.Data;
+﻿using AutoMapper;
+using Commander.Data;
+using Commander.Dtos;
 using Commander.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -13,31 +15,44 @@ namespace Commander.Controllers
     public class CommandsController : ControllerBase
     {
         private readonly ICommanderRepo _repository;
+        private readonly IMapper _mapper;
 
-        public CommandsController(ICommanderRepo repository)
+        public CommandsController(ICommanderRepo repository, IMapper mapper )
         {
             _repository = repository;
+            _mapper = mapper;
         }
 
         //private readonly MockCommanderRepo _repository = new MockCommanderRepo();
 
         [HttpGet]
-        public ActionResult<IEnumerable<Command>> GetAllCommands()
+        public ActionResult<IEnumerable<CommandReadDto>> GetAllCommands()
         {
             var commandItems = _repository.GetAllCommands();
 
-            return Ok(commandItems);
+            return Ok(_mapper.Map<IEnumerable<CommandReadDto>>(commandItems));
         }
 
         [HttpGet("{id}")]   
-        public ActionResult<Command> GetCommandByID(int id)
+        public ActionResult<CommandReadDto> GetCommandByID(int id)
         {
             var commandItem = _repository.GetCommandById(id);
             if(commandItem != null)
             {
-                return Ok(commandItem);
+                return Ok(_mapper.Map<CommandReadDto>(commandItem));
             }
             return NotFound();
         }
+
+        [HttpPost]
+        public ActionResult <CommandReadDto> CreateCommand(CommandCreateDto commandCreateDto)
+        {
+            var commandModel = _mapper.Map<Command>(commandCreateDto);
+            _repository.CreateCommand(commandModel);
+            _repository.SaveChanges();
+
+            return Ok(commandModel);
+        }
+
     }
 }
