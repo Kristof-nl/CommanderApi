@@ -17,7 +17,7 @@ namespace Commander.Controllers
         private readonly ICommanderRepo _repository;
         private readonly IMapper _mapper;
 
-        public CommandsController(ICommanderRepo repository, IMapper mapper )
+        public CommandsController(ICommanderRepo repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
@@ -33,11 +33,11 @@ namespace Commander.Controllers
             return Ok(_mapper.Map<IEnumerable<CommandReadDto>>(commandItems));
         }
 
-        [HttpGet("{id}", Name = "GetCommandByID")]   
+        [HttpGet("{id}", Name = "GetCommandByID")]
         public ActionResult<CommandReadDto> GetCommandByID(int id)
         {
             var commandItem = _repository.GetCommandById(id);
-            if(commandItem != null)
+            if (commandItem != null)
             {
                 return Ok(_mapper.Map<CommandReadDto>(commandItem));
             }
@@ -45,7 +45,7 @@ namespace Commander.Controllers
         }
 
         [HttpPost]
-        public ActionResult <CommandReadDto> CreateCommand(CommandCreateDto commandCreateDto)
+        public ActionResult<CommandReadDto> CreateCommand(CommandCreateDto commandCreateDto)
         {
             var commandModel = _mapper.Map<Command>(commandCreateDto);
             _repository.CreateCommand(commandModel);
@@ -53,7 +53,26 @@ namespace Commander.Controllers
 
             var CommandReadDto = _mapper.Map<CommandReadDto>(commandModel);
 
-            return CreatedAtRoute(nameof(GetCommandByID), new { Id = CommandReadDto.Id }, CommandReadDto );
+            return CreatedAtRoute(nameof(GetCommandByID), new { Id = CommandReadDto.Id }, CommandReadDto);
+        }
+
+        [HttpPut("{id}")]
+        public ActionResult UpdateCommand(int id, CommandUpdateDto commandUpdateDto)
+        {
+            var commandModelFromRepo = _repository.GetCommandById(id);
+            if (commandModelFromRepo == null)
+            {
+                return NotFound();
+            }
+
+            _mapper.Map(commandUpdateDto, commandModelFromRepo);
+
+            _repository.UpdateCommand(commandModelFromRepo);
+
+            _repository.SaveChanges();
+
+            return NoContent(); 
+
         }
 
     }
